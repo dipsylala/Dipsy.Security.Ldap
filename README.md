@@ -242,6 +242,15 @@ dotnet pack -c Release
 
 - .NET 10.0 or later
 
+## Comparison with Microsoft AntiXSS
+
+For a detailed comparison of this library's output with Microsoft's AntiXSS LDAP encoder, see [COMPARISON.md](COMPARISON.md). The comparison includes:
+
+- Side-by-side output comparisons for filter and DN encoding
+- Analysis of encoding format differences
+- RFC compliance verification
+- Injection payload testing results
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
