@@ -9,10 +9,10 @@ This document compares the output of our LDAP encoder implementation with Micros
 
 ## Filter Value Encoding Comparison (RFC 4515)
 
-### Results
+### Value Encoding Results
 
 | Input | Our Encoder | AntiXSS Encoder | Match |
-|-------|-------------|-----------------|-------|
+| ------- | ------------- | ----------------- | ------- |
 | `JohnDoe` | `JohnDoe` | `JohnDoe` | ✅ |
 | `*` | `\2a` | `\2a` | ✅ |
 | `(` | `\28` | `\28` | ✅ |
@@ -27,13 +27,14 @@ This document compares the output of our LDAP encoder implementation with Micros
 | `user*()\\name/` | `user\2a\28\29\5cname\2f` | `user\2a\28\29\5cname\2f` | ✅ |
 | `café` | `caf\c3\a9` | `caf\c3\a9` | ✅ |
 | `北京` | `\e5\8c\97\e4\ba\ac` | `\e5\8c\97\e4\ba\ac` | ✅ |
-| `*)(uid=*))(|(uid=*` | `\2a\29\28uid=\2a\29\29\28|\28uid=\2a` | `\2a\29\28uid=\2a\29\29\28|\28uid=\2a` | ✅ |
+| `*)(uid=*))(\|(uid=*` | `\2a\29\28uid=\2a\29\29\28\|\28uid=\2a` | `\2a\29\28uid=\2a\29\29\28\|\28uid=\2a` | ✅ |
 | `admin)(&(password=*` | `admin\29\28&\28password=\2a` | `admin\29\28&\28password=\2a` | ✅ |
 | `a\nb\rc\td` | `a\0ab\0dc\09d` | `a\0ab\0dc\09d` | ✅ |
 
-### Analysis
+### Value Encoding Analysis
 
 **Perfect compatibility** - Our filter encoding implementation produces identical output to AntiXSS for all test cases, including:
+
 - Required RFC 4515 escapes: `*`, `(`, `)`, `\`, NUL
 - OWASP-recommended escapes: `/` (forward slash)
 - Control characters (0x00-0x1F, 0x7F)
@@ -44,10 +45,10 @@ Both implementations use the same hex encoding format: `\xx` (backslash followed
 
 ## Distinguished Name (DN) Value Encoding Comparison (RFC 4514)
 
-### Results
+### DN Value Encoding Results
 
 | Input | Our Encoder | AntiXSS Encoder | Match |
-|-------|-------------|-----------------|-------|
+| ------- | ------------- | ----------------- | ------- |
 | `JohnDoe` | `JohnDoe` | `JohnDoe` | ✅ |
 | `john` | `john` | `john` | ✅ |
 | `hash#tag` | `hash#tag` | `hash#tag` | ✅ |
@@ -71,11 +72,12 @@ Both implementations use the same hex encoding format: `\xx` (backslash followed
 | `#hashtag` | `\#hashtag` | `\#hashtag` | ✅ |
 | `test\x01\x1F\x7Fvalue` | `test\01\1f\7fvalue` | `test#01#1F#7Fvalue` | ⚠️ |
 
-### Analysis
+### DN Value Encoding Analysis
 
 Both implementations correctly escape all required DN special characters, but use **different hex encoding formats**:
 
 #### Our Implementation
+
 - **Character escapes**: Uses backslash notation (e.g., `\=`, `\,`, `\+`)
 - **Hex escapes**: Uses backslash-hex format: `\xx` (lowercase)
   - Example: `café` → `caf\c3\a9`
@@ -83,6 +85,7 @@ Both implementations correctly escape all required DN special characters, but us
   - Example: NUL → `\00`
 
 #### AntiXSS Implementation
+
 - **Character escapes**: Uses hash-hex for certain characters (e.g., `#3D` for `=`)
 - **Hex escapes**: Uses hash-hex format: `#XX` (uppercase)
   - Example: `café` → `caf#C3#A9`
@@ -152,8 +155,8 @@ Both are correct. We chose to escape `=` for defense-in-depth, as it's a critica
 Both encoders successfully neutralize LDAP injection attempts:
 
 | Payload | Our Encoder | AntiXSS | Match |
-|---------|-------------|---------|-------|
-| `*)(uid=*))(|(uid=*` | `\2a\29\28uid=\2a\29\29\28|\28uid=\2a` | `\2a\29\28uid=\2a\29\29\28|\28uid=\2a` | ✅ |
+| --------- | ------------- | --------- | ------- |
+| `*)(uid=*))(\|(uid=*` | `\2a\29\28uid=\2a\29\29\28\|\28uid=\2a` | `\2a\29\28uid=\2a\29\29\28\|\28uid=\2a` | ✅ |
 | `admin)(&(password=*` | `admin\29\28&\28password=\2a` | `admin\29\28&\28password=\2a` | ✅ |
 | `*)(&(objectClass=*` | `\2a\29\28&\28objectClass=\2a` | `\2a\29\28&\28objectClass=\2a` | ✅ |
 | `*)(userPassword=*` | `\2a\29\28userPassword=\2a` | `\2a\29\28userPassword=\2a` | ✅ |
