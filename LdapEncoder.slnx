@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/LdapEncoder/LdapEncoder.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/LdapEncoder.Tests/LdapEncoder.Tests.csproj" />
+  </Folder>
+</Solution>
