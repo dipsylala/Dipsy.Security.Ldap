@@ -2,6 +2,9 @@
 
 A .NET library for securely encoding LDAP filter values and Distinguished Name (DN) values to prevent LDAP injection attacks.
 
+[![.NET 10](https://img.shields.io/badge/.NET-10-blue)](https://dotnet.microsoft.com/)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 ## Overview
 
 This library provides RFC-compliant encoding methods for LDAP operations:
