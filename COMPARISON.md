@@ -107,7 +107,7 @@ Both implementations correctly escape all required DN special characters, but us
 2. **Backslash hex escape** (our approach for non-ASCII):
 
    ```text
-   HEXDIG HEXDIG
+   "\" (HEXDIG HEXDIG)
    ```
 
    Example: `\C3\A9` for UTF-8 encoded `é`
